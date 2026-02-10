@@ -2,7 +2,7 @@ import { Hono } from 'hono';
 import { todoRoute } from './features/todos/routes.js';
 import { onError } from './middlewares/on-error.js';
 import { onNotFound } from './middlewares/on-not-found.js';
-import { clerkMiddleware, requireAuth } from './middlewares/auth.js';
+import { conditionalClerkMiddleware, requireAuth } from './middlewares/auth.js';
 import { ENV } from './env.js';
 import { secureHeaders } from 'hono/secure-headers';
 import { cors } from 'hono/cors';
@@ -25,7 +25,7 @@ export const app = new Hono({ strict: false })
     })
   )
   .use(secureHeaders())
-  .use('*', clerkMiddleware())
+  .use('*', conditionalClerkMiddleware())
   .use('/api/*', requireAuth)
   .route('/api', todoRoute)
   .get('/live', c =>

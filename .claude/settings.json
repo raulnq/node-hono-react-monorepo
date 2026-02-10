@@ -23,21 +23,11 @@
       "Bash(gh pr *)",
       "Bash(gh issue *)",
       "Bash(npm install*)",
-      "Bash(npm ci*)"
+      "Bash(npm ci*)",
+      "Bash(docker compose:*)"
     ]
   },
   "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "npx prettier --write \"%CLAUDE_FILE_PATH%\""
-          }
-        ]
-      }
-    ],
     "Stop": [
       {
         "matcher": "",
