@@ -22,7 +22,11 @@
     "lint:fix": "eslint . --fix",
     "lint:format": "npm run lint:fix && npm run format",
     "prepare": "husky || true",
-    "commit": "commit"
+    "commit": "commit",
+    "database:up": "docker-compose up database -d",
+    "database:down": "docker-compose down database",
+    "database:stop": "docker-compose stop database",
+    "seq:up": "docker-compose up seq -d"
   },
   "devDependencies": {
     "@commitlint/cli": "^20.3.1",

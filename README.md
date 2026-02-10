@@ -1,27 +1,74 @@
 # Node Monorepo Template
 
-A GitHub template for full-stack TypeScript monorepos using npm workspaces with a Hono backend and React (Vite) frontend.
+A GitHub template for full-stack TypeScript monorepos using npm workspaces with a Hono backend, React 19 frontend, PostgreSQL, Drizzle ORM, and Clerk authentication.
 
 ## Structure
 
 ```
 node-monorepo/
 ├── apps/
-│   ├── backend/          # Hono API server
-│   │   └── src/          # Backend source code
-│   └── frontend/         # React + Vite app
-│       └── src/          # Frontend source code
-├── packages/             # Shared packages (future use)
-├── .husky/               # Git hooks (pre-commit, commit-msg)
-├── .vscode/              # VSCode settings and debug configs
-├── package.json          # Root workspace config
-├── tsconfig.base.json    # Shared TypeScript options
-├── tsconfig.json         # Root TypeScript config
-├── eslint.config.ts      # Shared ESLint config (flat config)
-├── prettier.config.ts    # Shared Prettier config
-├── commitlint.config.ts  # Commit linting config
-└── .prettierignore       # Prettier ignore patterns
+│   ├── backend/                # Hono API server
+│   │   ├── src/
+│   │   │   ├── database/       # Drizzle client, schemas, migrations
+│   │   │   ├── features/       # Feature modules (endpoints + table + schemas)
+│   │   │   ├── middlewares/    # Auth, error handling, not-found
+│   │   │   ├── app.ts         # Hono app with route registration
+│   │   │   ├── env.ts         # Environment validation (Zod)
+│   │   │   ├── extensions.ts  # RFC 9457 error helpers
+│   │   │   ├── logger.ts      # Pino logger
+│   │   │   ├── pagination.ts  # Page type and createPage
+│   │   │   └── validator.ts   # Custom zValidator wrapper
+│   │   ├── tests/              # Integration tests (node:test)
+│   │   ├── drizzle.config.ts   # Drizzle Kit config
+│   │   └── Dockerfile          # Multi-stage build
+│   └── frontend/               # React 19 + Vite app
+│       └── src/
+│           ├── components/     # Shared UI (shadcn/ui, layout)
+│           ├── features/       # Feature modules (pages, components, stores)
+│           ├── hooks/          # Custom hooks
+│           ├── lib/            # Utilities
+│           ├── stores/         # Global stores (Zustand)
+│           ├── client.ts       # Hono type-safe API client
+│           └── routes.tsx      # React Router config
+├── .claude/
+│   └── skills/                 # Claude Code skills for code generation
+├── docker-compose.yml          # PostgreSQL, API, migrations, Seq
+├── tsconfig.base.json          # Shared TypeScript options
+├── eslint.config.ts            # Shared ESLint config (flat config)
+├── prettier.config.ts          # Shared Prettier config
+├── commitlint.config.ts        # Commit linting config
+├── CLAUDE.md                   # Claude Code conventions (auto-loaded)
+└── package.json                # Root workspace config
 ```
+
+## Example Todo Feature
+
+The template ships with a **Todos** feature as a working reference implementation. It demonstrates the full stack pattern across all layers:
+
+| Layer               | Files                                                                                                      |
+| ------------------- | ---------------------------------------------------------------------------------------------------------- |
+| Backend table       | `apps/backend/src/features/todos/todo.ts`                                                                  |
+| Backend schemas     | `apps/backend/src/features/todos/schemas.ts`                                                               |
+| Backend endpoints   | `apps/backend/src/features/todos/add-todo.ts`, `get-todo.ts`, `edit-todo.ts`, `list-todos.ts`, `routes.ts` |
+| Backend tests       | `apps/backend/tests/features/todos/`                                                                       |
+| Frontend stores     | `apps/frontend/src/features/todos/stores/`                                                                 |
+| Frontend components | `apps/frontend/src/features/todos/components/`                                                             |
+| Frontend pages      | `apps/frontend/src/features/todos/pages/`                                                                  |
+
+**This feature is only an example and should be removed when you start building your own project.** To clean it up:
+
+1. Delete `apps/backend/src/features/todos/`
+2. Delete `apps/backend/tests/features/todos/`
+3. Delete `apps/frontend/src/features/todos/`
+4. Remove the `todoRoute` import and `.route('/api', todoRoute)` from `apps/backend/src/app.ts`
+5. Remove the `todos` re-export from `apps/backend/src/database/schemas.ts`
+6. Remove the todo routes from `apps/frontend/src/routes.tsx`
+7. Remove the Todos entry from `NAV_ITEMS` in `apps/frontend/src/components/layout/AppSidebar.tsx`
+8. Remove the `/todos` entry from `TITLE_BY_PATH` in `apps/frontend/src/components/layout/AppHeader.tsx`
+9. Update `migrations.schema` in `apps/backend/drizzle.config.ts` to match your own schema name
+10. Generate a fresh migration: `npm run database:generate -w @node-monorepo/backend`
+
+You don't need the example code to use the Claude Code skills — the skills contain self-contained code templates and don't depend on the Todos feature being present.
 
 ## Getting Started
 
@@ -29,11 +76,59 @@ node-monorepo/
 
 - Node.js 20+
 - npm 10+
+- Docker (for PostgreSQL)
+- A [Clerk](https://clerk.com) account (for authentication)
 
 ### Installation
 
 ```bash
 npm install
+```
+
+### Environment Setup
+
+Copy the example env files and fill in your values:
+
+```bash
+# Backend
+cp apps/backend/.env.example apps/backend/.env
+
+# Frontend
+cp apps/frontend/.env.example apps/frontend/.env
+```
+
+**Backend** (`apps/backend/.env`):
+
+| Variable                | Description                  | Default                                              |
+| ----------------------- | ---------------------------- | ---------------------------------------------------- |
+| `PORT`                  | API server port              | `5000`                                               |
+| `DATABASE_URL`          | PostgreSQL connection string | `postgresql://myuser:mypassword@localhost:5432/mydb` |
+| `CORS_ORIGIN`           | Allowed CORS origin          | `http://localhost:5173`                              |
+| `CLERK_PUBLISHABLE_KEY` | Clerk publishable key        | —                                                    |
+| `CLERK_SECRET_KEY`      | Clerk secret key             | —                                                    |
+| `LOG_LEVEL`             | Pino log level               | `info`                                               |
+| `SEQ_URL`               | Seq logging URL (optional)   | —                                                    |
+
+**Frontend** (`apps/frontend/.env`):
+
+| Variable                     | Description           | Default                 |
+| ---------------------------- | --------------------- | ----------------------- |
+| `VITE_API_BASE_URL`          | Backend API URL       | `http://localhost:5000` |
+| `VITE_CLERK_PUBLISHABLE_KEY` | Clerk publishable key | —                       |
+
+### Database Setup
+
+Start PostgreSQL via Docker:
+
+```bash
+npm run database:up
+```
+
+Generate and apply migrations:
+
+```bash
+npm run database:generate -w @node-monorepo/backend
+npm run database:migrate -w @node-monorepo/backend
 ```
 
 ### Development
@@ -47,7 +142,7 @@ npm run dev
 Or run them separately:
 
 ```bash
-# Backend only (http://localhost:3000)
+# Backend only (http://localhost:5000)
 npm run dev:backend
 
 # Frontend only (http://localhost:5173)
@@ -57,51 +152,92 @@ npm run dev:frontend
 ### Build
 
 ```bash
-npm run build:backend
-npm run build:frontend
+npm run build
 ```
 
-### Production
+### Production (Docker)
 
 ```bash
-npm run start:backend
-npm run preview:frontend
+docker-compose up
 ```
+
+This starts PostgreSQL, runs migrations, and starts the API server.
 
 ## Available Scripts
 
-| Script             | Description                                  |
-| ------------------ | -------------------------------------------- |
-| `dev`              | Start both backend and frontend concurrently |
-| `dev:backend`      | Start backend dev server                     |
-| `dev:frontend`     | Start frontend dev server                    |
-| `build:backend`    | Build backend                                |
-| `build:frontend`   | Build frontend                               |
-| `start:backend`    | Start backend in production                  |
-| `preview:frontend` | Preview frontend build                       |
-| `lint`             | Run ESLint                                   |
-| `lint:fix`         | Fix ESLint issues                            |
-| `format`           | Format code with Prettier                    |
-| `format:check`     | Check code formatting                        |
-| `commit`           | Interactive commit with conventional commits |
+| Script              | Description                                                   |
+| ------------------- | ------------------------------------------------------------- |
+| `dev`               | Start both backend and frontend concurrently                  |
+| `dev:backend`       | Start backend dev server                                      |
+| `dev:frontend`      | Start frontend dev server                                     |
+| `build`             | Build both apps                                               |
+| `build:backend`     | Build backend                                                 |
+| `build:frontend`    | Build frontend                                                |
+| `start:backend`     | Start backend in production                                   |
+| `preview:frontend`  | Preview frontend build                                        |
+| `lint`              | Run ESLint                                                    |
+| `lint:fix`          | Fix ESLint issues                                             |
+| `format`            | Format code with Prettier                                     |
+| `format:check`      | Check code formatting                                         |
+| `lint:format`       | Fix lint + format in one step                                 |
+| `commit`            | Interactive conventional commit                               |
+| `database:up`       | Start PostgreSQL container                                    |
+| `database:down`     | Stop and remove database container                            |
+| `database:generate` | Generate Drizzle migrations (use `-w @node-monorepo/backend`) |
+| `database:migrate`  | Apply Drizzle migrations (use `-w @node-monorepo/backend`)    |
+| `database:studio`   | Open Drizzle Studio (use `-w @node-monorepo/backend`)         |
+| `test`              | Run backend tests (use `-w @node-monorepo/backend`)           |
+
+## Tech Stack
+
+### Backend
+
+- **Framework**: [Hono](https://hono.dev) + @hono/node-server
+- **Database**: PostgreSQL + [Drizzle ORM](https://orm.drizzle.team)
+- **Validation**: [Zod](https://zod.dev) (v4) + custom zValidator wrapper
+- **Auth**: [Clerk](https://clerk.com) (@hono/clerk-auth)
+- **Error handling**: [RFC 9457 Problem Details](https://www.rfc-editor.org/rfc/rfc9457) via http-problem-details
+- **Logging**: Pino + pino-pretty + optional Seq
+- **Testing**: node:test + Hono testClient + @faker-js/faker
+
+### Frontend
+
+- **Framework**: [React 19](https://react.dev) + [Vite 7](https://vite.dev)
+- **Routing**: [React Router v7](https://reactrouter.com)
+- **Data fetching**: [TanStack React Query](https://tanstack.com/query) (useSuspenseQuery)
+- **Forms**: [React Hook Form](https://react-hook-form.com) + zodResolver
+- **UI**: [shadcn/ui](https://ui.shadcn.com) (New York style) + [Tailwind CSS v4](https://tailwindcss.com)
+- **Auth**: [Clerk React](https://clerk.com/docs/references/react/overview)
+- **State**: [Zustand](https://zustand.docs.pmnd.rs) (client state)
+- **Toasts**: [Sonner](https://sonner.emilkowal.dev)
+
+### Tooling
+
+- **Monorepo**: npm workspaces
+- **Language**: TypeScript 5.9 (strict, verbatimModuleSyntax)
+- **Linting**: ESLint 9 (flat config) + typescript-eslint
+- **Formatting**: Prettier
+- **Git Hooks**: Husky + commitlint
+- **Containerization**: Docker + docker-compose
 
 ## Path Aliases
 
-| Alias | Location                             | Usage                        |
-| ----- | ------------------------------------ | ---------------------------- |
-| `#/*` | `apps/backend/src/*`                 | Internal backend imports     |
-| `@/*` | `apps/frontend/src/*`                | Internal frontend imports    |
-| `#/*` | `apps/backend/src/*` (from frontend) | Cross-workspace type imports |
+| Alias | Context  | Resolves to           | `.js` extension? |
+| ----- | -------- | --------------------- | ---------------- |
+| `#/*` | Backend  | `apps/backend/src/*`  | **Yes, always**  |
+| `@/*` | Frontend | `apps/frontend/src/*` | No               |
+| `#/*` | Frontend | `apps/backend/src/*`  | No               |
 
-Example:
+Backend uses `moduleResolution: "NodeNext"` — every import **must** end with `.js`. Frontend uses `moduleResolution: "bundler"` — never add `.js`.
 
 ```ts
 // Backend
-import { handler } from '#/routes/api';
+import { client } from '#/database/client.js';
+import type { Todo } from '#/features/todos/schemas.js';
 
 // Frontend
-import { Button } from '@/components/Button';
-import type { User } from '#/types/user'; // Type-only from backend
+import { Button } from '@/components/ui/button';
+import type { Todo } from '#/features/todos/schemas';
 ```
 
 ## Commit Convention
@@ -112,14 +248,57 @@ This template uses [Conventional Commits](https://www.conventionalcommits.org/) 
 <type>(<scope>): <subject>
 
 # Examples:
-feat(backend): Add user authentication
-fix(frontend): Resolve state update issue
-chore(repo): Update dependencies
+feat(backend): add projects API endpoints
+fix(frontend): correct pagination off-by-one error
+chore(repo): update dependencies
 ```
 
 **Allowed scopes**: `backend`, `frontend`, `repo`
 
 **Allowed subject case**: `sentence-case` or `lower-case`
+
+## Claude Code Skills
+
+This template includes [Claude Code](https://docs.anthropic.com/en/docs/claude-code) skills that codify the project's coding patterns. When you use Claude Code in this repository, it automatically loads `CLAUDE.md` with the core conventions, and can use the skills below to generate consistent, pattern-compliant code.
+
+### Available Skills
+
+| Skill                    | Location                               | What it does                                                                                                                                                                                          |
+| ------------------------ | -------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **add-backend-feature**  | `.claude/skills/add-backend-feature/`  | Generates a complete backend API feature: Drizzle table, Zod schemas, CRUD endpoints (add, get, edit, list), route aggregator, and app registration                                                   |
+| **add-frontend-feature** | `.claude/skills/add-frontend-feature/` | Generates a complete frontend feature: API client, React Query hooks, table/form/card components with skeletons and error states, CRUD pages with suspense boundaries, route and sidebar registration |
+| **add-backend-tests**    | `.claude/skills/add-backend-tests/`    | Generates integration tests: DSL file with factory functions, overloaded action functions, fluent assertions, and test files for each endpoint                                                        |
+| **add-db-schema**        | `.claude/skills/add-db-schema/`        | Guides database schema changes: new tables or column modifications, Zod schema sync, and migration commands                                                                                           |
+| **project-conventions**  | `.claude/skills/project-conventions/`  | Reference for all coding conventions: import aliases, formatting, commits, error handling, frontend/backend patterns                                                                                  |
+
+### How to Use
+
+1. **Install Claude Code** if you haven't already: https://docs.anthropic.com/en/docs/claude-code
+2. **Open a terminal** in the repository root and run `claude`
+3. **Ask Claude to add a feature** and it will follow the skill patterns:
+
+```
+> Add a projects feature with name and description fields
+> Add the frontend for the projects feature
+> Add tests for the projects feature
+> Add a status column to the projects table
+```
+
+Claude will read the relevant skill, follow the step-by-step checklist, and produce code that matches the established patterns exactly.
+
+### What the Skills Enforce
+
+The skills ensure every generated feature follows these non-obvious conventions:
+
+- Each endpoint is a `new Hono()` sub-app, not a handler function
+- Tables use `pgSchema('..._schema')`, not `pgTable()`
+- Primary keys are UUIDv7 via `v7()` from `uuid`
+- Validation uses a custom `zValidator` wrapper (not raw `@hono/zod-validator`)
+- All errors are RFC 9457 Problem Details
+- HTTP status codes use the `StatusCodes` enum, never raw numbers
+- Frontend uses `useSuspenseQuery` (never `useQuery`) with triple-layer error boundaries
+- Forms use `Controller` + `zodResolver` with a custom `Field` component (not shadcn FormField)
+- Tests use `node:test` + `testClient(app)` with a DSL pattern for fluent assertions
 
 ## Debugging
 
@@ -145,45 +324,25 @@ VSCode debug configurations are included:
 3. Select "Debug Frontend"
 4. Press F5 - Chrome will open
 5. Set breakpoints in `apps/frontend/src/*.tsx` files
-6. Interact with the app - breakpoints will be hit
 
 ### Debug Full Stack
 
 1. Open Run and Debug panel (Ctrl+Shift+D)
 2. Select "Debug Full Stack"
 3. Press F5 - starts both debuggers
-4. Set breakpoints in both backend and frontend files
-
-## Tech Stack
-
-- **Monorepo**: npm workspaces
-- **Backend**: Hono + @hono/node-server
-- **Frontend**: React 19 + Vite 7
-- **Language**: TypeScript 5.7
-- **Linting**: ESLint 9 (flat config)
-- **Formatting**: Prettier
-- **Git Hooks**: Husky
-- **Commit Linting**: Commitlint
-- **Concurrency**: concurrently
 
 ## TypeScript Configuration
 
-All TypeScript configurations extend from `tsconfig.base.json`, which defines shared strict options:
+All TypeScript configurations extend from `tsconfig.base.json`:
 
 ```
-tsconfig.base.json          # Shared: strict, noUnusedLocals, noUnusedParameters, etc.
-├── tsconfig.json           # Root config files (ESLint, Prettier, Commitlint)
+tsconfig.base.json                    # Shared: strict, verbatimModuleSyntax, ESM
+├── tsconfig.json                     # Root config files
 ├── apps/backend/tsconfig.json        # NodeNext module, Hono JSX
 └── apps/frontend/
-    ├── tsconfig.app.json   # Browser code, React JSX, DOM types
-    └── tsconfig.node.json  # Vite config (Node.js)
+    ├── tsconfig.app.json             # Bundler resolution, React JSX, DOM types
+    └── tsconfig.node.json            # Vite config (Node.js)
 ```
-
-**Benefits of base config:**
-
-- Single source of truth for strict options
-- Consistent settings across all packages
-- Easier maintenance and updates
 
 ## License
 

@@ -3,12 +3,14 @@
   "compilerOptions": {
     "target": "ES2022",
     "useDefineForClassFields": true,
+    "types": ["vite/client"],
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
       "#/*": ["../backend/src/*"]

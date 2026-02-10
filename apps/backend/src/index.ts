@@ -1,24 +1,29 @@
-import { Hono } from 'hono';
-import { cors } from 'hono/cors';
 import { serve } from '@hono/node-server';
+import { ENV } from './env.js';
+import { app } from './app.js';
+import { logger } from './logger.js';
 
-const app = new Hono();
-
-app.use(
-  '/api/*',
-  cors({
-    origin: 'http://localhost:5173',
-  })
-);
-
-app.get('/api/hello', c => {
-  return c.json({ message: 'Hello World from Hono!' });
+process.on('uncaughtException', err => {
+  logger.fatal(err, 'Uncaught exception');
+  process.exit(1);
 });
 
-const port = 3000;
-console.log(`Server is running on http://localhost:${port}`);
+const server = serve(
+  {
+    fetch: app.fetch,
+    port: ENV.PORT,
+  },
+  info => {
+    logger.info(
+      { port: info.port, env: ENV.NODE_ENV },
+      `Server is running on http://localhost:${info.port}`
+    );
+  }
+);
 
-serve({
-  fetch: app.fetch,
-  port,
+process.on('unhandledRejection', (err: Error) => {
+  logger.fatal(err, 'Unhandled rejection');
+  server.close(() => {
+    process.exit(1);
+  });
 });
