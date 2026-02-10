@@ -8,9 +8,6 @@ import { ThemeToggle } from '../ThemeToggle';
 const TITLE_BY_PATH: Record<string, string> = {
   '/': 'Dashboard',
   '/todos': 'Todos',
-  '/companies': 'Companies',
-  '/deals': 'Deals',
-  '/settings': 'Settings',
 };
 
 function usePageTitle() {
