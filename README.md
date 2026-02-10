@@ -269,13 +269,43 @@ This template includes [Claude Code](https://docs.anthropic.com/en/docs/claude-c
 | **add-frontend-feature** | `.claude/skills/add-frontend-feature/` | Generates a complete frontend feature: API client, React Query hooks, table/form/card components with skeletons and error states, CRUD pages with suspense boundaries, route and sidebar registration |
 | **add-backend-tests**    | `.claude/skills/add-backend-tests/`    | Generates integration tests: DSL file with factory functions, overloaded action functions, fluent assertions, and test files for each endpoint                                                        |
 | **add-db-schema**        | `.claude/skills/add-db-schema/`        | Guides database schema changes: new tables or column modifications, Zod schema sync, and migration commands                                                                                           |
-| **project-conventions**  | `.claude/skills/project-conventions/`  | Reference for all coding conventions: import aliases, formatting, commits, error handling, frontend/backend patterns                                                                                  |
+| **review-code**          | `.claude/skills/review-code/`          | Reviews code for adherence to project conventions, common mistakes, and best practices in this Hono + React monorepo                                                                                  |
+
+### Available Commands
+
+| Command         | Location                          | What it does                                                                                                                                                      |
+| --------------- | --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **add-feature** | `.claude/commands/add-feature.md` | End-to-end feature workflow: discovery, DB schema, backend API, test design, backend tests, frontend UI, and code review — all in a single guided 7-phase process |
+
+The `add-feature` command orchestrates the individual skills into a complete workflow. Run it with:
+
+```
+/add-feature projects with name and description fields
+```
+
+It walks through these phases in order:
+
+1. **Discovery** — determines if the feature is new or an extension, asks clarifying questions
+2. **DB Schema** — creates/modifies the table and runs migrations (uses `add-db-schema` skill)
+3. **Backend API** — creates Hono endpoints and route aggregator (uses `add-backend-feature` skill)
+4. **Test Design** — presents planned test scenarios for user approval
+5. **Backend Tests** — writes and runs integration tests (uses `add-backend-tests` skill)
+6. **Frontend UI** — creates React pages, components, and stores (uses `add-frontend-feature` skill)
+7. **Code Review** — verifies all files follow conventions (uses `review-code` skill)
+
+Each phase has a gate condition that must pass before proceeding to the next.
 
 ### How to Use
 
 1. **Install Claude Code** if you haven't already: https://docs.anthropic.com/en/docs/claude-code
 2. **Open a terminal** in the repository root and run `claude`
-3. **Ask Claude to add a feature** and it will follow the skill patterns:
+3. **Use the command** to add a full feature end-to-end:
+
+```
+> /add-feature projects with name and description fields
+```
+
+4. Or **ask Claude directly** to use individual skills:
 
 ```
 > Add a projects feature with name and description fields
