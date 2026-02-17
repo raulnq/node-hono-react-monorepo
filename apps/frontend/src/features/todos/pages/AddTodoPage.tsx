@@ -1,15 +1,17 @@
 import { useNavigate } from 'react-router';
-import { type SubmitHandler } from 'react-hook-form';
-
+import type { SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
-import { type AddTodo } from '#/features/todos/schemas';
+import type { AddTodo } from '#/features/todos/schemas';
 import { useAddTodo } from '../stores/useTodos';
 import { AddTodoForm } from '../components/AddTodoForm';
-import { TodoHeader } from '../components/TodoHeader';
+import { FormCardHeader } from '@/components/FormCardHeader';
+import { FormCardFooter } from '@/components/FormCardFooter';
+import { Card } from '@/components/ui/card';
 
 export function AddTodoPage() {
   const navigate = useNavigate();
   const add = useAddTodo();
+
   const onSubmit: SubmitHandler<AddTodo> = async data => {
     try {
       const result = await add.mutateAsync(data);
@@ -24,12 +26,20 @@ export function AddTodoPage() {
 
   return (
     <div className="space-y-4">
-      <TodoHeader
-        onBack={() => navigate('/todos')}
-        title="Add Todo"
-        description="Create a new todo item."
-      />
-      <AddTodoForm isPending={add.isPending} onSubmit={onSubmit} />
+      <Card>
+        <FormCardHeader
+          title="Add Todo"
+          description="Create a new todo item."
+        />
+        <AddTodoForm isPending={add.isPending} onSubmit={onSubmit} />
+        <FormCardFooter
+          formId="form"
+          saveText="Save Todo"
+          cancelText="Cancel"
+          onCancel={() => navigate('/todos')}
+          isPending={add.isPending}
+        />
+      </Card>
     </div>
   );
 }
