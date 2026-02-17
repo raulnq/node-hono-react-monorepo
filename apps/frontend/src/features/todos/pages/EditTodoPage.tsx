@@ -8,10 +8,10 @@ import type { EditTodo } from '#/features/todos/schemas';
 import { useEditTodo, useTodoSuspense } from '../stores/useTodos';
 import { EditTodoForm } from '../components/EditTodoForm';
 import { TodoSkeleton } from '../components/TodoSkeleton';
-import { TodoError } from '../components/TodoError';
 import { Card } from '@/components/ui/card';
 import { FormCardHeader } from '@/components/FormCardHeader';
 import { FormCardFooter } from '@/components/FormCardFooter';
+import { ErrorFallback } from '@/components/ErrorFallback';
 
 export function EditTodoPage() {
   const navigate = useNavigate();
@@ -39,7 +39,15 @@ export function EditTodoPage() {
         />
         <QueryErrorResetBoundary>
           {({ reset }) => (
-            <ErrorBoundary onReset={reset} FallbackComponent={TodoError}>
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={({ resetErrorBoundary }) => (
+                <ErrorFallback
+                  resetErrorBoundary={resetErrorBoundary}
+                  message="Failed to load todo"
+                />
+              )}
+            >
               <Suspense fallback={<TodoSkeleton />}>
                 <InnerTodo
                   isPending={edit.isPending}

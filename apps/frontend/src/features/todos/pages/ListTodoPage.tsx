@@ -2,9 +2,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import { TodosError, TodosSkeleton, TodoTable } from '../components/TodoTable';
+import { TodosSkeleton, TodoTable } from '../components/TodoTable';
 import { TodoSearchBar } from '../components/TodoSearchBar';
 import { ListCardHeader } from '@/components/ListCardHeader';
+import { ErrorFallback } from '@/components/ErrorFallback';
 
 export function ListTodoPage() {
   return (
@@ -21,7 +22,15 @@ export function ListTodoPage() {
         <CardContent>
           <QueryErrorResetBoundary>
             {({ reset }) => (
-              <ErrorBoundary onReset={reset} FallbackComponent={TodosError}>
+              <ErrorBoundary
+                onReset={reset}
+                FallbackComponent={({ resetErrorBoundary }) => (
+                  <ErrorFallback
+                    resetErrorBoundary={resetErrorBoundary}
+                    message="Failed to load todos"
+                  />
+                )}
+              >
                 <Suspense fallback={<TodosSkeleton />}>
                   <TodoTable />
                 </Suspense>

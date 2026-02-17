@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/table';
 import { useTodosSuspense } from '../stores/useTodos';
 import { Pagination } from '@/components/Pagination';
+import { NoMatchingItems } from '@/components/NoMatchingItems';
 
 export function TodosSkeleton() {
   return (
@@ -42,33 +43,12 @@ export function TodosSkeleton() {
   );
 }
 
-export function TodosError({
-  resetErrorBoundary,
-}: {
-  resetErrorBoundary: () => void;
-}) {
-  return (
-    <div className="text-center py-8">
-      <p className="text-destructive mb-4">Error loading todos.</p>
-      <Button onClick={resetErrorBoundary} variant="outline">
-        Try again
-      </Button>
-    </div>
-  );
-}
-
 export function TodoTable() {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') ?? '';
   const { data } = useTodosSuspense({ name: name });
 
-  if (data.items.length === 0) {
-    return (
-      <div className="text-center py-8 text-muted-foreground">
-        No stores found matching your search.
-      </div>
-    );
-  }
+  if (data.items.length === 0) return <NoMatchingItems />;
 
   return (
     <>

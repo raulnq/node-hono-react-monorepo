@@ -7,7 +7,10 @@ import { ThemeToggle } from '../ThemeToggle';
 
 const TITLE_BY_PATH: Record<string, string> = {
   '/': 'Dashboard',
-  '/todos': 'Todos',
+  '/applications': 'Applications',
+  '/clients': 'Clients',
+  '/leads': 'Leads',
+  '/properties': 'Properties',
 };
 
 function usePageTitle() {
@@ -20,7 +23,7 @@ function usePageTitle() {
   return matchedKey ? TITLE_BY_PATH[matchedKey] : 'CRM';
 }
 
-export default function AppHeader() {
+export function AppHeader() {
   const title = usePageTitle();
 
   return (

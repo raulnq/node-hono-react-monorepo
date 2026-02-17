@@ -5,12 +5,12 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { useTodoSuspense } from '../stores/useTodos';
 import { ViewTodoCard } from '../components/ViewTodoCard';
 import { TodoSkeleton } from '../components/TodoSkeleton';
-import { TodoError } from '../components/TodoError';
 import { Card } from '@/components/ui/card';
 import { ViewCardHeader } from '@/components/ViewCardHeader';
 import { ViewCardFooter } from '@/components/ViewCardFooter';
 import { Button } from '@/components/ui/button';
 import { Pencil } from 'lucide-react';
+import { ErrorFallback } from '@/components/ErrorFallback';
 
 export function ViewTodoPage() {
   const { todoId } = useParams<{ todoId: string }>();
@@ -32,7 +32,15 @@ export function ViewTodoPage() {
         </ViewCardHeader>
         <QueryErrorResetBoundary>
           {({ reset }) => (
-            <ErrorBoundary onReset={reset} FallbackComponent={TodoError}>
+            <ErrorBoundary
+              onReset={reset}
+              FallbackComponent={({ resetErrorBoundary }) => (
+                <ErrorFallback
+                  resetErrorBoundary={resetErrorBoundary}
+                  message="Failed to load todo"
+                />
+              )}
+            >
               <Suspense fallback={<TodoSkeleton />}>
                 <InnerTodo todoId={todoId!} />
               </Suspense>
