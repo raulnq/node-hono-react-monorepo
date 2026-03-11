@@ -3,10 +3,7 @@ import type { SubmitHandler } from 'react-hook-form';
 import { toast } from 'sonner';
 import type { AddTodo } from '#/features/todos/schemas';
 import { useAddTodo } from '../stores/useTodos';
-import { AddTodoForm } from '../components/AddTodoForm';
-import { FormCardHeader } from '@/components/FormCardHeader';
-import { FormCardFooter } from '@/components/FormCardFooter';
-import { Card } from '@/components/ui/card';
+import { TodoAddForm } from '../components/TodoAddForm';
 
 export function AddTodoPage() {
   const navigate = useNavigate();
@@ -26,20 +23,11 @@ export function AddTodoPage() {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <FormCardHeader
-          title="Add Todo"
-          description="Create a new todo item."
-        />
-        <AddTodoForm isPending={add.isPending} onSubmit={onSubmit} />
-        <FormCardFooter
-          formId="form"
-          saveText="Save Todo"
-          cancelText="Cancel"
-          onCancel={() => navigate('/todos')}
-          isPending={add.isPending}
-        />
-      </Card>
+      <TodoAddForm
+        isPending={add.isPending}
+        onSubmit={onSubmit}
+        onCancel={() => navigate('/todos')}
+      />
     </div>
   );
 }

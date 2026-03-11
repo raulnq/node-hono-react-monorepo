@@ -2,15 +2,25 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import type { Todo } from '#/features/todos/schemas';
-import { ViewCardContent } from '@/components/ViewCardContent';
+import { FormCard } from '@/components/FormCard';
+import { EditButton } from '@/components/EditButton';
 
-type ViewTodoCardProps = {
+type TodoViewCardProps = {
   todo: Todo;
+  onCancel: () => void;
 };
 
-export function ViewTodoCard({ todo }: ViewTodoCardProps) {
+export function TodoViewCard({ todo, onCancel }: TodoViewCardProps) {
   return (
-    <ViewCardContent>
+    <FormCard
+      onCancel={onCancel}
+      title="View Todo"
+      description="View todo details."
+      readOnly={true}
+      renderAction={
+        <EditButton text="Edit" link={`/todos/${todo.todoId}/edit`} />
+      }
+    >
       <FieldGroup>
         <Field>
           <FieldLabel>Name</FieldLabel>
@@ -23,6 +33,6 @@ export function ViewTodoCard({ todo }: ViewTodoCardProps) {
           </FieldLabel>
         </Field>
       </FieldGroup>
-    </ViewCardContent>
+    </FormCard>
   );
 }

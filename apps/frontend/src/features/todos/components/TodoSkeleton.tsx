@@ -1,10 +1,10 @@
 import { Field, FieldGroup, FieldLabel } from '@/components/ui/field';
-import { CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { FormSkeleton } from '@/components/FormCard';
 
 export function TodoSkeleton() {
   return (
-    <CardContent>
+    <FormSkeleton>
       <FieldGroup>
         <Field>
           <FieldLabel>Name</FieldLabel>
@@ -15,6 +15,6 @@ export function TodoSkeleton() {
           <FieldLabel className="font-normal">Completed</FieldLabel>
         </Field>
       </FieldGroup>
-    </CardContent>
+    </FormSkeleton>
   );
 }

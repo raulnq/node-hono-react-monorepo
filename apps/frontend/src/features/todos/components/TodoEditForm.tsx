@@ -1,6 +1,6 @@
-import { Input } from '@/components/ui/input';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Input } from '@/components/ui/input';
 import {
   Field,
   FieldError,
@@ -12,23 +12,36 @@ import {
   type EditTodo,
   type Todo,
 } from '#/features/todos/schemas';
-import { FormCardContent } from '@/components/FormCardContent';
+import { FormCard } from '@/components/FormCard';
 import { Checkbox } from '@/components/ui/checkbox';
 
-type EditTodoFormProps = {
+type TodoEditFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<EditTodo>;
+  onCancel: () => void;
   todo: Todo;
 };
 
-export function EditTodoForm({ isPending, onSubmit, todo }: EditTodoFormProps) {
+export function TodoEditForm({
+  isPending,
+  onSubmit,
+  onCancel,
+  todo,
+}: TodoEditFormProps) {
   const form = useForm<EditTodo>({
     resolver: zodResolver(editTodoSchema),
     defaultValues: todo,
   });
 
   return (
-    <FormCardContent formId="form" onSubmit={form.handleSubmit(onSubmit)}>
+    <FormCard
+      onSubmit={form.handleSubmit(onSubmit)}
+      onCancel={onCancel}
+      saveText="Save Todo"
+      isPending={isPending}
+      title="Edit Todo"
+      description="Update todo details."
+    >
       <FieldGroup>
         <Controller
           name="name"
@@ -66,6 +79,6 @@ export function EditTodoForm({ isPending, onSubmit, todo }: EditTodoFormProps) {
           )}
         />
       </FieldGroup>
-    </FormCardContent>
+    </FormCard>
   );
 }

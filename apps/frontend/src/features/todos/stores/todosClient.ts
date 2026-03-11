@@ -1,4 +1,4 @@
-import { client } from '../../../client';
+import { client } from '@/client';
 import type { Page } from '#/pagination';
 import type {
   AddTodo,
@@ -23,7 +23,7 @@ export async function listTodos(
   );
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.detail || 'Failed to fetch stores');
+    throw new Error(error.detail || 'Failed to fetch todos');
   }
   return response.json();
 }

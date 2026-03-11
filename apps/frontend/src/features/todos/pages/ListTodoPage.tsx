@@ -6,6 +6,7 @@ import { TodosSkeleton, TodoTable } from '../components/TodoTable';
 import { TodoSearchBar } from '../components/TodoSearchBar';
 import { ListCardHeader } from '@/components/ListCardHeader';
 import { ErrorFallback } from '@/components/ErrorFallback';
+import { AddButton } from '@/components/AddButton';
 
 export function ListTodoPage() {
   return (
@@ -13,9 +14,8 @@ export function ListTodoPage() {
       <Card>
         <ListCardHeader
           title="Todos"
-          description="Things you need to do."
-          addLink="/todos/new"
-          addText="Add Todo"
+          description="Manage your todos."
+          renderAction={<AddButton link="/todos/new" text="Add Todo" />}
         >
           <TodoSearchBar />
         </ListCardHeader>

@@ -6,11 +6,8 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { EditTodo } from '#/features/todos/schemas';
 import { useEditTodo, useTodoSuspense } from '../stores/useTodos';
-import { EditTodoForm } from '../components/EditTodoForm';
+import { TodoEditForm } from '../components/TodoEditForm';
 import { TodoSkeleton } from '../components/TodoSkeleton';
-import { Card } from '@/components/ui/card';
-import { FormCardHeader } from '@/components/FormCardHeader';
-import { FormCardFooter } from '@/components/FormCardFooter';
 import { ErrorFallback } from '@/components/ErrorFallback';
 
 export function EditTodoPage() {
@@ -32,40 +29,28 @@ export function EditTodoPage() {
 
   return (
     <div className="space-y-4">
-      <Card>
-        <FormCardHeader
-          title="Edit Todo"
-          description="Edit an existing todo item."
-        />
-        <QueryErrorResetBoundary>
-          {({ reset }) => (
-            <ErrorBoundary
-              onReset={reset}
-              FallbackComponent={({ resetErrorBoundary }) => (
-                <ErrorFallback
-                  resetErrorBoundary={resetErrorBoundary}
-                  message="Failed to load todo"
-                />
-              )}
-            >
-              <Suspense fallback={<TodoSkeleton />}>
-                <InnerTodo
-                  isPending={edit.isPending}
-                  onSubmit={onSubmit}
-                  todoId={todoId!}
-                />
-              </Suspense>
-            </ErrorBoundary>
-          )}
-        </QueryErrorResetBoundary>
-        <FormCardFooter
-          formId="form"
-          saveText="Save Todo"
-          cancelText="Cancel"
-          onCancel={() => navigate('/todos')}
-          isPending={edit.isPending}
-        />
-      </Card>
+      <QueryErrorResetBoundary>
+        {({ reset }) => (
+          <ErrorBoundary
+            onReset={reset}
+            FallbackComponent={({ resetErrorBoundary }) => (
+              <ErrorFallback
+                resetErrorBoundary={resetErrorBoundary}
+                message="Failed to load todo"
+              />
+            )}
+          >
+            <Suspense fallback={<TodoSkeleton />}>
+              <InnerTodo
+                isPending={edit.isPending}
+                onSubmit={onSubmit}
+                onCancel={() => navigate('/todos')}
+                todoId={todoId!}
+              />
+            </Suspense>
+          </ErrorBoundary>
+        )}
+      </QueryErrorResetBoundary>
     </div>
   );
 }
@@ -74,9 +59,17 @@ type InnerTodoProps = {
   todoId: string;
   isPending: boolean;
   onSubmit: SubmitHandler<EditTodo>;
+  onCancel: () => void;
 };
 
-function InnerTodo({ isPending, onSubmit, todoId }: InnerTodoProps) {
+function InnerTodo({ isPending, onSubmit, onCancel, todoId }: InnerTodoProps) {
   const { data } = useTodoSuspense(todoId);
-  return <EditTodoForm isPending={isPending} onSubmit={onSubmit} todo={data} />;
+  return (
+    <TodoEditForm
+      isPending={isPending}
+      onSubmit={onSubmit}
+      onCancel={onCancel}
+      todo={data}
+    />
+  );
 }

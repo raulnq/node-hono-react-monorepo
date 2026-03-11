@@ -1,7 +1,6 @@
-import { Link, useSearchParams } from 'react-router';
-import { Search, Pencil, Check, X } from 'lucide-react';
+import { useSearchParams } from 'react-router';
+import { Check, X } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Button } from '@/components/ui/button';
 import {
   Table,
   TableBody,
@@ -13,17 +12,27 @@ import {
 import { useTodosSuspense } from '../stores/useTodos';
 import { Pagination } from '@/components/Pagination';
 import { NoMatchingItems } from '@/components/NoMatchingItems';
+import { EditCellButton } from '@/components/EditCellButton';
+import { ViewCellButton } from '@/components/ViewCellButton';
+import { TextTableCell } from '@/components/TextTableCell';
+import { ActionTableCell } from '@/components/ActionTableCell';
+
+function InnerTableHeader() {
+  return (
+    <TableHeader>
+      <TableRow>
+        <TableHead className="min-w-60">Name</TableHead>
+        <TableHead className="w-[100px]">Completed</TableHead>
+        <TableHead className="w-20">Actions</TableHead>
+      </TableRow>
+    </TableHeader>
+  );
+}
 
 export function TodosSkeleton() {
   return (
     <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead className="w-[100px]">Completed</TableHead>
-          <TableHead className="w-[100px]">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
+      <InnerTableHeader />
       <TableBody>
         {Array.from({ length: 10 }).map((_, index) => (
           <TableRow key={index}>
@@ -46,28 +55,20 @@ export function TodosSkeleton() {
 export function TodoTable() {
   const [searchParams] = useSearchParams();
   const name = searchParams.get('name') ?? '';
-  const { data } = useTodosSuspense({ name: name });
+  const page = searchParams.get('page') ?? '1';
+  const pageNumber = Math.max(1, Math.floor(Number(page)) || 1);
+  const { data } = useTodosSuspense({ name, pageNumber });
 
   if (data.items.length === 0) return <NoMatchingItems />;
 
   return (
-    <>
+    <div className="overflow-x-auto">
       <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead className="w-[100px]">Completed</TableHead>
-            <TableHead className="w-[100px]">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
+        <InnerTableHeader />
         <TableBody>
           {data?.items.map(todo => (
             <TableRow key={todo.todoId}>
-              <TableCell className="font-medium">
-                <Link to={`/todos/${todo.todoId}`} className="hover:underline">
-                  {todo.name}
-                </Link>
-              </TableCell>
+              <TextTableCell className="font-medium" value={todo.name} />
               <TableCell>
                 {todo.completed ? (
                   <span className="flex items-center gap-1 text-green-600">
@@ -81,27 +82,15 @@ export function TodoTable() {
                   </span>
                 )}
               </TableCell>
-              <TableCell>
-                <div className="flex gap-2">
-                  <Button variant="ghost" size="icon" asChild>
-                    <Link to={`/todos/${todo.todoId}`}>
-                      <Search className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                  <Button variant="ghost" size="icon" asChild>
-                    <Link to={`/todos/${todo.todoId}/edit`}>
-                      <Pencil className="h-4 w-4" />
-                    </Link>
-                  </Button>
-                </div>
-              </TableCell>
+              <ActionTableCell>
+                <ViewCellButton link={`/todos/${todo.todoId}`} />
+                <EditCellButton link={`/todos/${todo.todoId}/edit`} />
+              </ActionTableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      <div className="mt-4">
-        <Pagination totalPages={data.totalPages} />
-      </div>
-    </>
+      <Pagination totalPages={data.totalPages} />
+    </div>
   );
 }

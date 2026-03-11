@@ -1,6 +1,6 @@
-import { Input } from '@/components/ui/input';
 import { useForm, Controller, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Input } from '@/components/ui/input';
 import {
   Field,
   FieldError,
@@ -8,14 +8,19 @@ import {
   FieldLabel,
 } from '@/components/ui/field';
 import { addTodoSchema, type AddTodo } from '#/features/todos/schemas';
-import { FormCardContent } from '@/components/FormCardContent';
+import { FormCard } from '@/components/FormCard';
 
-type AddTodoFormProps = {
+type TodoAddFormProps = {
   isPending: boolean;
   onSubmit: SubmitHandler<AddTodo>;
+  onCancel: () => void;
 };
 
-export function AddTodoForm({ isPending, onSubmit }: AddTodoFormProps) {
+export function TodoAddForm({
+  isPending,
+  onSubmit,
+  onCancel,
+}: TodoAddFormProps) {
   const form = useForm<AddTodo>({
     resolver: zodResolver(addTodoSchema),
     defaultValues: {
@@ -24,7 +29,14 @@ export function AddTodoForm({ isPending, onSubmit }: AddTodoFormProps) {
   });
 
   return (
-    <FormCardContent formId="form" onSubmit={form.handleSubmit(onSubmit)}>
+    <FormCard
+      onSubmit={form.handleSubmit(onSubmit)}
+      onCancel={onCancel}
+      saveText="Save Todo"
+      isPending={isPending}
+      title="Add Todo"
+      description="Create a new todo item."
+    >
       <FieldGroup>
         <Controller
           name="name"
@@ -44,6 +56,6 @@ export function AddTodoForm({ isPending, onSubmit }: AddTodoFormProps) {
           )}
         />
       </FieldGroup>
-    </FormCardContent>
+    </FormCard>
   );
 }
