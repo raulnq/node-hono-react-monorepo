@@ -53,7 +53,10 @@ For each file in `files.pure`:
 
 **Safety rules — never sync these regardless of manifest:**
 
-- `.env` files (only `.env.example`)
+- `.env` and `.env.example` files (child projects manage their own env config)
+- `package.json` (root and app-level — child projects manage their own dependencies)
+- `docker-compose.yml` (child projects customize their own Docker setup)
+- `CLAUDE.md` (child projects maintain their own project instructions)
 - `apps/backend/src/database/migrations/*`
 - `apps/backend/src/features/*`
 - `apps/frontend/src/features/*`
@@ -89,7 +92,7 @@ Use these to identify template vs child-added lines:
 ## Step 5 — Sync skills and Claude config
 
 Copy every file listed in `skills` from the template to the child project.
-Also sync `CLAUDE.md` (already in `files.pure`).
+Note: `CLAUDE.md` is NOT synced — child projects maintain their own version.
 
 ## Step 6 — Post-sync checklist
 

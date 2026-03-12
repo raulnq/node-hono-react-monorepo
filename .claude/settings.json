@@ -24,7 +24,20 @@
       "Bash(gh issue *)",
       "Bash(npm install*)",
       "Bash(npm ci*)",
-      "Bash(docker compose:*)"
+      "Bash(docker compose:*)",
+      "Read(//c/Source/rent-flow/apps/backend/**)",
+      "Read(//c/Source/rent-flow/apps/backend/src/**)",
+      "Read(//c/Source/rent-flow/apps/backend/tests/**)",
+      "Read(//c/Source/rent-flow/apps/frontend/src/stores/**)",
+      "Read(//c/Source/rent-flow/apps/frontend/src/**)",
+      "Bash(cp \"c:/Source/node-hono-react-monorepo/.claude/skills/sync-template/SKILL.md\" \"C:/Source/rent-flow/.claude/skills/sync-template/SKILL.md\")",
+      "Bash(cp \"c:/Source/node-hono-react-monorepo/.claude/skills/sync-template/template-manifest.json\" \"C:/Source/rent-flow/.claude/skills/sync-template/template-manifest.json\")",
+      "Read(//c/Source/rent-flow/apps/frontend/**)"
+    ],
+    "additionalDirectories": [
+      "C:\\Source\\rent-flow\\apps\\backend",
+      "C:\\Source\\rent-flow\\apps\\frontend\\src\\stores",
+      "C:\\Source\\rent-flow\\apps\\frontend\\src"
     ]
   },
   "hooks": {

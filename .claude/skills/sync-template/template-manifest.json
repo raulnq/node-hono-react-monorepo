@@ -3,14 +3,11 @@
   "description": "Manifest of template infrastructure files. Used by the sync-template skill to propagate changes to child projects.",
   "files": {
     "pure": [
-      "CLAUDE.md",
-      "package.json",
       "tsconfig.base.json",
       "tsconfig.json",
       "eslint.config.ts",
       "prettier.config.ts",
       "commitlint.config.ts",
-      "docker-compose.yml",
       ".gitignore",
       ".prettierignore",
       ".claudeignore",
@@ -20,12 +17,10 @@
       ".husky/commit-msg",
       ".husky/pre-commit",
 
-      "apps/backend/package.json",
       "apps/backend/tsconfig.json",
       "apps/backend/tsconfig.app.json",
       "apps/backend/drizzle.config.ts",
       "apps/backend/Dockerfile",
-      "apps/backend/.env.example",
       "apps/backend/src/index.ts",
       "apps/backend/src/env.ts",
       "apps/backend/src/logger.ts",
@@ -40,14 +35,12 @@
       "apps/backend/tests/assertions.ts",
       "apps/backend/tests/errors.ts",
 
-      "apps/frontend/package.json",
       "apps/frontend/tsconfig.json",
       "apps/frontend/tsconfig.app.json",
       "apps/frontend/tsconfig.node.json",
       "apps/frontend/vite.config.ts",
       "apps/frontend/components.json",
       "apps/frontend/index.html",
-      "apps/frontend/.env.example",
       "apps/frontend/src/main.tsx",
       "apps/frontend/src/App.tsx",
       "apps/frontend/src/client.ts",
@@ -139,14 +132,21 @@
     ".claude/skills/update-features/SKILL.md",
     ".claude/skills/feedback-template/SKILL.md",
     ".claude/commands/add-feature.md",
-    ".claude/settings.json",
     ".claude/work_complete.mp3",
     ".claude/work_complete.ps1"
   ],
   "never_sync": [
+    "CLAUDE.md",
+    "package.json",
+    "apps/backend/package.json",
+    "apps/frontend/package.json",
+    "docker-compose.yml",
     ".env",
+    ".env.example",
     "apps/backend/.env",
+    "apps/backend/.env.example",
     "apps/frontend/.env",
+    "apps/frontend/.env.example",
     "apps/backend/src/database/migrations/**",
     "apps/backend/src/features/**",
     "apps/frontend/src/features/**",
@@ -154,6 +154,7 @@
     "node_modules/**",
     "dist/**",
     "package-lock.json",
-    "*.tsbuildinfo"
+    "*.tsbuildinfo",
+    ".claude/settings.json"
   ]
 }
