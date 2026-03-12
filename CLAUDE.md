@@ -15,6 +15,9 @@ When asked to add features, tests, or schema changes, read the relevant skill fi
 - `.claude/skills/add-backend-tests/` — integration tests with DSL pattern
 - `.claude/skills/add-db-schema/` — database table changes and migrations
 - `.claude/skills/review-code/` — code review against project conventions
+- `.claude/skills/sync-template/` — sync template infrastructure to child projects
+- `.claude/skills/update-features/` — audit and update feature code after template sync
+- `.claude/skills/feedback-template/` — pull improvements from child projects back into template
 
 ## Import rules (most common mistake)
 
